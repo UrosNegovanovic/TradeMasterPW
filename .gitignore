@@ -1,0 +1,16 @@
+# Lokalna dokumentacija – ne push-uj na GitHub
+resenje.md
+Plan.md
+komande.md
+
+# Env varijable (Clerk ključevi)
+.env
+.env.local
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
