@@ -8,6 +8,10 @@ const FIXED_OTP = '424242';  // Clerk Test Mode – isti kao za login
 
 test.describe('TradeMaster Registration', () => {
     test('should register successfully', async ({ page, homePage, signUpPage }) => {
+        test.skip(
+            !process.env.CLERK_PUBLISHABLE_KEY || !process.env.CLERK_SECRET_KEY,
+            'CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY required (set in .env or GitHub Secrets for CI)'
+        );
         await setupClerkTestingToken({ page });
 
         await homePage.navigate();
