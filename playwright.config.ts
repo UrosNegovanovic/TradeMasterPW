@@ -1,50 +1,57 @@
 import { defineConfig, devices } from '@playwright/test';
+import { env } from './config/env';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+export const STORAGE_STATE = 'playwright/.auth/user.json';
+export const STORAGE_STATE_B = 'playwright/.auth/user-b.json';
+export const STORAGE_STATE_VAT = 'playwright/.auth/user-vat.json';
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   testDir: './tests',
   globalSetup: './global.setup.ts',
-  /* Run tests in files in parallel */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
+  // Shared per-user state (stock, invoice numbers): 1 worker on CI until there is a user per worker.
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  reporter: process.env.CI
+    ? [['list'], ['html', { open: 'never' }], ['json', { outputFile: 'test-results/results.json' }]]
+    : [['list'], ['html', { open: 'never' }]],
   use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    baseURL: env.baseURL,
+    locale: 'sr-RS',
+    timezoneId: 'Europe/Belgrade',
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
 
-  /* Configure projects – Google Chrome only */
   projects: [
+    { name: 'setup', testMatch: /setup\/.*\.setup\.ts/ },
     {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+      // Logged-out UI flows: landing, sign-in, sign-up, public smoke.
+      name: 'chromium-public',
+      testMatch: ['public/**/*.spec.ts', 'smoke/public.spec.ts'],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      // Logged-in UI flows reuse the session saved by the setup project.
+      name: 'chromium-desktop',
+      testMatch: ['app/**/*.spec.ts', 'smoke/app.spec.ts'],
+      testIgnore: ['**/*.mobile.spec.ts'],
+      dependencies: ['setup'],
+      use: { ...devices['Desktop Chrome'], storageState: STORAGE_STATE },
+    },
+    {
+      name: 'chromium-mobile',
+      testMatch: ['app/dashboard-nav.spec.ts', 'app/**/*.mobile.spec.ts'],
+      dependencies: ['setup'],
+      use: { ...devices['Pixel 5'], storageState: STORAGE_STATE },
+    },
+    {
+      // Request-only tests. `request` is anonymous; authenticated clients come from fixtures/api.ts.
+      name: 'api',
+      testMatch: ['api/**/*.spec.ts'],
+      dependencies: ['setup'],
     },
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
