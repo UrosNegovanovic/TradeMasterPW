@@ -30,7 +30,7 @@ Izvori: `CLAUDE.md` (pravila), `PLAYWRIGHT_AQA_BRIEF.md` (domen i ID-evi testova
 - [x] 3.1 Smoke SM-01..SM-07
 - [x] 3.2 `apiClient` fixture (Bearer token iz Clerk sesije, lazy `GET /api/profile`)
 - [x] 3.3 SEC-01 (401 parametrizovano), SEC-02 (IDOR, drugi korisnik), SEC-05
-- [~] 3.4 Prvi zeleni CI (smoke + SEC): workflow napisan (smoke gate → regression), čeka secrets/vars u GitHub-u i prvi push
+- [x] 3.4 Prvi zeleni CI (smoke + SEC): smoke gate → regression zeleno na PR #1 (secrets/vars postavljeni preko `gh`)
 
 ## Faza 4 — Asortiman i Magacin
 - [x] 4.1 `InventoryPage`, `WarehousePage`, komponente (Toast, ConfirmDialog, Select)
@@ -81,3 +81,4 @@ Izvori: `CLAUDE.md` (pravila), `PLAYWRIGHT_AQA_BRIEF.md` (domen i ID-evi testova
 | 2026-10-05 | 6.1–6.2 | Kataloge pokrivaju `tests/api/catalogs.spec.ts` (20: CA-01/02/04/05/06/07/08/11; allow-lista polja javnog DTO-a), `tests/app/catalogs.spec.ts` + `catalog-public.spec.ts` (CA-01/02/03/05/07/08/09/10/11/12). Novi tenanti `fin` (PDV firma), `dash`, `settings` (`config/tenants.ts`, fixture `as('<tenant>')`, `purgeTenant`) za testove sa egzaktnim iznosima i izmenom profila: `finance.spec.ts` (5), `dashboard.spec.ts` (6), `settings.spec.ts` (5), `clients.spec.ts` (6). POM: Catalogs*, PublicCatalogPage, FinancePage, ClientsPage, SettingsPage. 209/209 zeleno u 4 uzastopna prolaza, ~73 s, 0 ostataka u svih 6 tenanata |
 | 2026-10-05 | — | **Uzrok ranijih fleki-padova pronađen: bio je u testovima.** `uniqueId()` (Date.now + brojač po workeru) davao je isti SKU u dva workera u istoj milisekundi, a `POST /api/products` spaja isti SKU. Dodat slučajan deo. Ostaje samo Clerk-UI rizik (AU-01/02/03) koji se u poslednjih 8 punih prolaza nije ponovio |
 | 2026-10-05 | — | Novi nalazi u `BUGS.md`: BUG-013 (prazan javni link kataloga ~7 s zbog 4 retry-ja na 404), BUG-014 (engleski u katalozima), BUG-016 (žiro-račun se ne validira), BUG-017 (procenti sa tačkom), BUG-018 (gramatika na Početnoj) |
+| 2026-10-06 | 3.4 | GitHub secrets (`CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`) i var `BASE_URL` postavljeni preko `gh` iz lokalnog `.env` (lozinka **nije** rotirana, 0.3 i dalje otvoren; repo je javan). Posao Faza 1–6 commitovan na granu `claude/project-thread-0ghwd8`, draft PR #1. Prvi run: smoke 60/60 zeleno, regression 4 pada: CA-02b, IN-16, WH-04a, WH-04c su lokalno prolazili samo zato što su paralelni workeri već napravili proizvode; uz `workers: 1` tenant je prazan i forma prikazuje prazno stanje. Dodat `seed.product()`. Drugi run: smoke 60/60, regression 206/206 (3 flaky, prošli na retry: CA-02c, WH-01, API IN-04, svi na proveri `/api/profile` / 401, sumnja na istek Clerk tokena u `ApiClient` TTL-u, otvoreno) |
