@@ -55,8 +55,8 @@ Izvori: `CLAUDE.md` (pravila), `PLAYWRIGHT_AQA_BRIEF.md` (domen i ID-evi testova
 
 ## Faza 8 — Kvalitet i CI/CD
 - [ ] 8.1 Mobilni projekat (Pixel 5), RS-01
-- [ ] 8.2 A11y (`@axe-core/playwright`) AX-01, AX-02
-- [ ] 8.3 Landing/SEO (LA-01..LA-06)
+- [x] 8.2 A11y (`@axe-core/playwright`) AX-01 (javne + prijavljene stranice, dijalog proizvoda, forma fakture; 4 poznata pada kao `test.fail`, BUG-020..022). AX-02 (tastatura, fokus u dijalozima) nije urađen
+- [x] 8.3 Landing/SEO LA-01..LA-05; LA-06 `test.fixme` (BUG-023); LA-04 mobilni u `landing.mobile.spec.ts`
 - [ ] 8.4 CI: keš, odvojen smoke job, sharding, secrets za test korisnika, ESLint + typecheck gate
 - [ ] 8.5 Percy / BrowserStack: zadržati ili ukloniti (odluka)
 
@@ -82,3 +82,5 @@ Izvori: `CLAUDE.md` (pravila), `PLAYWRIGHT_AQA_BRIEF.md` (domen i ID-evi testova
 | 2026-10-05 | — | **Uzrok ranijih fleki-padova pronađen: bio je u testovima.** `uniqueId()` (Date.now + brojač po workeru) davao je isti SKU u dva workera u istoj milisekundi, a `POST /api/products` spaja isti SKU. Dodat slučajan deo. Ostaje samo Clerk-UI rizik (AU-01/02/03) koji se u poslednjih 8 punih prolaza nije ponovio |
 | 2026-10-05 | — | Novi nalazi u `BUGS.md`: BUG-013 (prazan javni link kataloga ~7 s zbog 4 retry-ja na 404), BUG-014 (engleski u katalozima), BUG-016 (žiro-račun se ne validira), BUG-017 (procenti sa tačkom), BUG-018 (gramatika na Početnoj) |
 | 2026-10-06 | 3.4 | GitHub secrets (`CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`) i var `BASE_URL` postavljeni preko `gh` iz lokalnog `.env` (lozinka **nije** rotirana, 0.3 i dalje otvoren; repo je javan). Posao Faza 1–6 commitovan na granu `claude/project-thread-0ghwd8`, draft PR #1. Prvi run: smoke 60/60 zeleno, regression 4 pada: CA-02b, IN-16, WH-04a, WH-04c su lokalno prolazili samo zato što su paralelni workeri već napravili proizvode; uz `workers: 1` tenant je prazan i forma prikazuje prazno stanje. Dodat `seed.product()`. Drugi run: smoke 60/60, regression 206/206 (3 flaky, prošli na retry: CA-02c, WH-01, API IN-04, svi na proveri `/api/profile` / 401, sumnja na istek Clerk tokena u `ApiClient` TTL-u, otvoreno) |
+| 2026-10-06 | — | Flaky `ApiClient` token: uzrok najverovatnije u tome što Clerk `getToken()` vraća keširan token koji je već blizu isteka, a mi smo ga držali još 40 s. Sada `getToken({ skipCache: true })` i ponovna upotreba samo dok do `exp` ostaje više od 20 s (`fixtures/api.ts`). API projekat 107/107 zeleno; potvrda na CI-ju čeka |
+| 2026-10-06 | 8.2, 8.3 | `utils/a11y.ts` (axe, pad na critical/serious, prilog `axe-violations.json`), `tests/public/a11y.spec.ts` (5 stranica čisto), `tests/app/a11y.spec.ts` (8 stranica + dijalog proizvoda + forma fakture; Asortiman, Magacin, Katalozi i dijalog proizvoda imaju prave nalaze → `test.fail`, BUG-020..022). `landing.spec.ts` (LA-01 FAQ + CTA, LA-02 cenovnik bez obećanja naplate, LA-03 titlovi, LA-05 meta/OG/canonical, LA-06 `fixme`, BUG-023), `landing.mobile.spec.ts` (LA-04). 69 prošlo, 6 preskočeno u 3 uzastopna prolaza |

@@ -5,6 +5,13 @@ export const copy = {
     heroHeading: /Od barkoda do fakture/i,
     signIn: 'Prijava',
     signUp: 'Registruj se',
+    pricingCta: 'Probaj besplatno',
+    price: '20 €',
+    priceNote: 'mesečno, posle 60 dana besplatno',
+    // Copy must stay honest: there is no checkout or self-service cancellation in the app.
+    noCheckoutPromises: /otkaži bilo kada|kartic[au] (je )?obavezn|automatsk[ao] (se )?naplat/i,
+    // Quoted placeholder the owner entered as the company address.
+    operatorPlaceholder: /Adresa koju je vlasnik naveo je „test“/,
   },
   signIn: {
     heading: 'Prijavi se na TradeMaster',

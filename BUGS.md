@@ -130,3 +130,28 @@ Ovaj fajl je izvor za prijavu bugova. Svaki unos ima korake koje je dovoljno pre
 
 ### Metodološka napomena o ranijim „fleki" padovima
 - Pad „expected '8' got '0'", API IN-03 (faktura posle odgovora 400) i AU-03 u ranijim izveštajima: **uzrok dva od njih je bio u testovima**, ne u aplikaciji. `uniqueId()` se zasnivao na `Date.now()` i brojaču po workeru; dva workera u istoj milisekundi dobila su isti SKU/naziv kupca, pa je `POST /api/products` spojio proizvode (`action: "updated"`, 200). Ispravljeno (dodat je slučajan deo). Treba ostati oprezan: ovo ujedno potvrđuje ponašanje iz BUG-012 (isti SKU se spaja bez upozorenja).
+
+---
+
+## Pristupačnost (axe, WCAG 2.x A/AA)
+
+Pokrivenost: `tests/public/a11y.spec.ts` (landing, prijava, registracija, privatnost, uslovi: čisto) i `tests/app/a11y.spec.ts`. Padovi su označeni `test.fail` sa referencom na ove stavke. Tačne čvorove vidi u prilogu `axe-violations.json` HTML izveštaja.
+
+### BUG-020 · Srednja · Potvrđeno — Asortiman: dugme bez pristupačnog naziva (axe `button-name`, critical)
+- **Koraci:** prijavljen korisnik → `/inventory` → axe analiza.
+- **Stvarno:** jedno dugme (`.border-input.h-9`, treći element u grupi, verovatno ikonica) nema tekst ni `aria-label`.
+- **Očekivano:** `aria-label` na dugmetu sa ikonom.
+
+### BUG-021 · Niska · Potvrđeno — Magacin: nedovoljan kontrast na destruktivnom dugmetu (axe `color-contrast`, serious)
+- **Koraci:** `/warehouse` → axe analiza.
+- **Stvarno:** element `.bg-destructive` ne zadovoljava odnos kontrasta 4.5:1.
+
+### BUG-022 · Srednja · Potvrđeno — Radix Select okidač bez naziva (axe `button-name`, critical)
+- **Koraci:** `/catalogs`, kao i dijalog „Dodaj proizvod" → axe analiza.
+- **Stvarno:** `<button role="combobox">` (npr. izbor kategorije) nema `aria-label` niti povezanu `<label>`; čitač ekrana ga ne imenuje.
+- **Napomena:** u fakturi isti obrazac nije označen (forma prolazi).
+
+### BUG-023 · Niska · Potvrđeno — pravne stranice sadrže placeholder adrese operatera (LA-06)
+- **Koraci:** `/privatnost` i `/uslovi`.
+- **Stvarno:** „Adresa koju je vlasnik naveo je „test“." (operater T&G Nest, PIB `12312412312`). Pre lansiranja mora prava adresa u `src/lib/operator.ts`.
+- **Test:** LA-06 je `test.fixme` dok vlasnik ne unese podatke.

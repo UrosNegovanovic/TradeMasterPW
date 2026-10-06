@@ -5,8 +5,13 @@ import { ApiClient } from '../utils/api-client';
 import { Seeder } from '../utils/seed';
 import { TenantName, tenantStorageState } from '../config/tenants';
 
-/** Clerk session JWTs live ~60s, so tokens are re-read from the browser session shortly before that. */
-const TOKEN_TTL_MS = 40_000;
+/** Clerk session JWTs live ~60s. A token is reused only while this much of its real lifetime (JWT `exp`) is left. */
+const MIN_REMAINING_MS = 20_000;
+
+function expiresAtMs(jwt: string): number {
+  const payload = JSON.parse(Buffer.from(jwt.split('.')[1], 'base64url').toString('utf8')) as { exp: number };
+  return payload.exp * 1000;
+}
 
 type TokenSource = { getToken: () => Promise<string>; dispose: () => Promise<void> };
 
@@ -14,14 +19,15 @@ async function createTokenSource(browser: Browser, storageState: string): Promis
   const context = await browser.newContext({ storageState, baseURL: env.baseURL });
   const page = await context.newPage();
   await page.goto('/');
-  let cached: { token: string; at: number } | undefined;
+  let cached: { token: string; expiresAt: number } | undefined;
 
   return {
     async getToken() {
-      if (cached && Date.now() - cached.at < TOKEN_TTL_MS) return cached.token;
+      if (cached && cached.expiresAt - Date.now() > MIN_REMAINING_MS) return cached.token;
       await page.waitForFunction(() => (window as any).Clerk?.session, undefined, { timeout: 15_000 });
-      const token = await page.evaluate(() => (window as any).Clerk.session.getToken() as Promise<string>);
-      cached = { token, at: Date.now() };
+      // skipCache: Clerk's own cache can hand back a token that is already close to expiry.
+      const token = await page.evaluate(() => (window as any).Clerk.session.getToken({ skipCache: true }) as Promise<string>);
+      cached = { token, expiresAt: expiresAtMs(token) };
       return token;
     },
     dispose: () => context.close(),

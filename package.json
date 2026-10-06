@@ -20,6 +20,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@clerk/backend": "^2.33.7",
     "@clerk/testing": "^1.13.33",
     "@percy/cli": "^1.29.0",
