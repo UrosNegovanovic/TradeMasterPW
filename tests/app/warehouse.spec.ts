@@ -50,7 +50,9 @@ test.describe('Magacin – stock movements', { tag: ['@regression', '@p0'] }, ()
     expect(stock).toBe(4);
   });
 
-  test('WH-04a entry dialog validates product, quantity and reason', async ({ warehousePage }) => {
+  test('WH-04a entry dialog validates product, quantity and reason', async ({ warehousePage, seed }) => {
+    // Ulaz/Izlaz buttons only exist when the tenant has products.
+    await seed.product();
     await warehousePage.navigate();
     await warehousePage.openEntryDialog();
     await warehousePage.entrySubmit().click();
@@ -71,7 +73,9 @@ test.describe('Magacin – stock movements', { tag: ['@regression', '@p0'] }, ()
     await expectRejected(warehousePage.dialog(), warehousePage.quantityInput(), warehouse.errors.quantity);
   });
 
-  test('WH-04c exit dialog validates product and reason', async ({ warehousePage }) => {
+  test('WH-04c exit dialog validates product and reason', async ({ warehousePage, seed }) => {
+    // Ulaz/Izlaz buttons only exist when the tenant has products.
+    await seed.product();
     await warehousePage.navigate();
     await warehousePage.openExitDialog();
     await warehousePage.exitSubmit().click();

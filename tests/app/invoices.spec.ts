@@ -92,7 +92,10 @@ test.describe('Fakture – create (company outside the VAT system)', { tag: ['@r
     await expect.poll(() => invoiceFormPage.clientName().evaluate((el: HTMLInputElement) => el.validity.valid)).toBe(false);
   });
 
-  test('IN-16 leaving a changed form asks for confirmation', async ({ invoiceFormPage, page }) => {
+  test('IN-16 leaving a changed form asks for confirmation', async ({ invoiceFormPage, page, seed }) => {
+    // The form renders an empty state instead of the fields when the tenant has no products.
+    await seed.product();
+
     await invoiceFormPage.navigateNew();
     await invoiceFormPage.clientName().fill('E2E nesačuvano');
 

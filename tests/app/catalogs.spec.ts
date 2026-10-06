@@ -11,6 +11,8 @@ test.describe('Katalozi – owner flows', { tag: ['@regression', '@p0'] }, () =>
     const unpriced = await seed.product({ price: 0, costPrice: 100 });
     const name = `${uniqueId()} katalog`;
     seed.trackCatalogsByName(name);
+    // The form renders an empty state instead of the fields when the tenant has no products.
+    await seed.product();
 
     await catalogFormPage.navigateNew();
     await catalogFormPage.name().fill(name);
