@@ -57,7 +57,7 @@ test.describe('Invoice export API', { tag: ['@api', '@regression'] }, () => {
 
     expect(response.status()).toBe(200);
     expect(response.headers()['content-type']).toContain('csv');
-    const csv = (await response.text()).replace(/^﻿/, '');
+    const csv = (await response.text()).replace(/^\uFEFF/, '');
     const [header, ...rows] = csv.trim().split(/\r?\n/);
     expect(header).toBe(CSV_HEADER);
     expect(rows.some((r) => r.startsWith(`${issued.invoiceNumber};`))).toBe(true);

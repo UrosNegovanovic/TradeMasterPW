@@ -6,6 +6,7 @@
   "scripts": {
     "test": "playwright test",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
     "test:setup": "playwright test --project=setup",
     "test:smoke": "playwright test --grep @smoke",
     "test:api": "playwright test --project=api",
@@ -23,12 +24,16 @@
     "@axe-core/playwright": "^4.13.0",
     "@clerk/backend": "^2.33.7",
     "@clerk/testing": "^1.13.33",
+    "@eslint/js": "^10.0.1",
     "@percy/cli": "^1.29.0",
     "@percy/playwright": "^1.0.10",
     "@playwright/test": "^1.58.0",
     "@types/node": "^25.1.0",
     "browserstack-node-sdk": "^1.49.11",
     "dotenv": "^16.4.5",
-    "typescript": "^7.0.2"
+    "eslint": "^10.12.0",
+    "eslint-plugin-playwright": "^2.12.1",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "typescript-eslint": "^8.71.1"
   }
 }

@@ -57,7 +57,7 @@ Izvori: `CLAUDE.md` (pravila), `PLAYWRIGHT_AQA_BRIEF.md` (domen i ID-evi testova
 - [x] 8.1 Mobilni projekat (Pixel 5) postoji; RS-01: bez horizontalnog skrola na svih 8 stranica + kreiranje proizvoda na telefonu (`responsive.mobile.spec.ts`). Tablet nije pokriven
 - [x] 8.2 A11y (`@axe-core/playwright`) AX-01 (javne + prijavljene stranice, dijalog proizvoda, forma fakture; 4 poznata pada kao `test.fail`, BUG-020..022). AX-02 (tastatura, fokus u dijalozima) nije urađen
 - [x] 8.3 Landing/SEO LA-01..LA-05; LA-06 `test.fixme` (BUG-023); LA-04 mobilni u `landing.mobile.spec.ts`
-- [ ] 8.4 CI: keš, odvojen smoke job, sharding, secrets za test korisnika, ESLint + typecheck gate
+- [~] 8.4 CI: npm keš već postojao; dodati keš Playwright browsera, ESLint (`eslint-plugin-playwright`, pravila iz CLAUDE.md) i lint gate u smoke jobu. Sharding namerno ne (deljeni tenanti, `workers: 1`)
 - [ ] 8.5 Percy / BrowserStack: zadržati ili ukloniti (odluka)
 
 ## Dnevnik
@@ -85,3 +85,4 @@ Izvori: `CLAUDE.md` (pravila), `PLAYWRIGHT_AQA_BRIEF.md` (domen i ID-evi testova
 | 2026-10-06 | — | Flaky `ApiClient` token: uzrok najverovatnije u tome što Clerk `getToken()` vraća keširan token koji je već blizu isteka, a mi smo ga držali još 40 s. Sada `getToken({ skipCache: true })` i ponovna upotreba samo dok do `exp` ostaje više od 20 s (`fixtures/api.ts`). API projekat 107/107 zeleno; potvrda na CI-ju čeka |
 | 2026-10-06 | 8.2, 8.3 | `utils/a11y.ts` (axe, pad na critical/serious, prilog `axe-violations.json`), `tests/public/a11y.spec.ts` (5 stranica čisto), `tests/app/a11y.spec.ts` (8 stranica + dijalog proizvoda + forma fakture; Asortiman, Magacin, Katalozi i dijalog proizvoda imaju prave nalaze → `test.fail`, BUG-020..022). `landing.spec.ts` (LA-01 FAQ + CTA, LA-02 cenovnik bez obećanja naplate, LA-03 titlovi, LA-05 meta/OG/canonical, LA-06 `fixme`, BUG-023), `landing.mobile.spec.ts` (LA-04). 69 prošlo, 6 preskočeno u 3 uzastopna prolaza |
 | 2026-10-06 | 8.1 | `tests/app/responsive.mobile.spec.ts`: 8 provera skrola + kreiranje proizvoda (na telefonu je lista kartica, ne tabela, pa se traži `listitem`). 33/33 u 3 prolaza. Tablet i ostali P0 tokovi (fakture) na mobilnom nisu pokriveni |
+| 2026-10-06 | 8.4 | ESLint 10 + `typescript-eslint` + `eslint-plugin-playwright` (`eslint.config.mjs`, `npm run lint`): 0 grešaka, 25 upozorenja (networkidle, uslovi u testu, preskočeni testovi). **TypeScript vraćen sa 7 na 6** (`typescript@npm:@typescript/typescript6`) jer `typescript-eslint` ne podržava TS 7; vratiti na 7 kad podrška stigne. CI: keš `~/.cache/ms-playwright` i `lint` korak; čeka zeleni run |

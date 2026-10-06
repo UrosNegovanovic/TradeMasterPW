@@ -48,7 +48,9 @@ test.describe('Landing page content', () => {
     await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute('content', 'sr_RS');
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
 
+    // The value is needed to build a request, which toHaveAttribute cannot give back.
     const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
+    // eslint-disable-next-line playwright/prefer-web-first-assertions
     expect(ogImage, 'og:image is set').toBeTruthy();
     // The tag holds the production origin, the file is checked on the environment under test.
     const image = await request.get(new URL(ogImage!).pathname);
