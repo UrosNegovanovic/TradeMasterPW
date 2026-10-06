@@ -68,6 +68,36 @@ npx playwright test tests/registration.spec.ts
 npx playwright show-report
 ```
 
+### BrowserStack (cloud browsers and real devices)
+
+Run tests on BrowserStack’s grid (set credentials in `.env` or in `browserstack.yml`):
+
+```bash
+# Copy .env.example to .env and set BROWSERSTACK_USERNAME, BROWSERSTACK_ACCESS_KEY
+npm run test:browserstack
+```
+
+- **Platforms in `browserstack.yml`:** Windows 11 (Chrome) and **Samsung Galaxy S24, Android 14** (real device).
+- **Real-device smoke test (screenshot proof):**  
+  `npm run test:browserstack -- tests/browserstack-galaxy-s24.spec.ts`  
+  Opens the app on Galaxy S24, takes a screenshot, and asserts the home page loads. Screenshot is attached to the test report and saved under `test-results/`.
+- Edit `browserstack.yml` to change platforms (OS/browser/device) and options.
+
+### Percy (visual regression)
+
+Snapshots are taken in `home.spec.ts`, `auth.spec.ts`, and `dashboard-nav.spec.ts`. Run with Percy to upload and compare:
+
+```bash
+# Set PERCY_TOKEN in .env (from https://percy.io → your project → Settings)
+npm run test:percy
+```
+
+To run on BrowserStack with Percy:
+
+```bash
+npm run test:browserstack:percy
+```
+
 ---
 
 ## CI (GitHub Actions)
@@ -84,11 +114,12 @@ Tests run on **push** and **pull_request** to `main` / `master`.
 
 ## Tests overview
 
-| Spec               | What it does                                      |
-|--------------------|---------------------------------------------------|
-| `home.spec.ts`     | Landing page: hero text, Sign In, Get Started    |
-| `auth.spec.ts`     | Login with Clerk test user + OTP `424242`         |
-| `registration.spec.ts` | Sign up (random email), Turnstile bypass, OTP, redirect to dashboard |
+| Spec               | What it does                                                                 |
+|--------------------|-------------------------------------------------------------------------------|
+| `home.spec.ts`     | Landing page: hero text, Sign In; Percy snapshots                             |
+| `auth.spec.ts`     | Login with Clerk test user + OTP `424242`; Percy snapshot after login        |
+| `registration.spec.ts` | Sign up (random email), Turnstile bypass, OTP, redirect to dashboard    |
+| `dashboard-nav.spec.ts` | Login → each nav page (Dashboard, Inventory, …), screenshot + Percy  |
 
 ---
 

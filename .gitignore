@@ -3,9 +3,27 @@ resenje.md
 Plan.md
 komande.md
 
+# Jednokratne skripte za ispravku commita
+fix-first-commit.ps1
+scripts/
+
 # Env varijable (Clerk ključevi)
 .env
 .env.local
+
+# Screenshot-ovi iz dashboard-nav testa (identifikovani po run folderu)
+screenshots/
+
+# MCP / tooling artifacts
+.explore/
+.playwright-mcp/
+log/
+browserstack.yml
+
+# Unrelated task files
+Setvi-Task.postman_collection*.json
+api-verification/
+posao.md
 
 # Playwright
 node_modules/

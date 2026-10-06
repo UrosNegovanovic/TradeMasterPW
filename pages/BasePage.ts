@@ -2,15 +2,13 @@ import { Page } from "@playwright/test";
 
 export class BasePage {
     readonly page: Page;
-    readonly baseURL: string;
 
-    constructor(page: Page, baseURL: string) {
+    constructor(page: Page) {
         this.page = page;
-        this.baseURL = baseURL;
     }
 
     async goto(path: string = '') {
-        await this.page.goto(`${this.baseURL}${path}`);
+        await this.page.goto(path || '/');
     }
 
     async getTitle(): Promise<string> {

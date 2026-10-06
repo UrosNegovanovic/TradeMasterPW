@@ -1,0 +1,12 @@
+---
+description: Never commit or push to the user's GitHub as Cursor; always use the user's identity only
+alwaysApply: true
+---
+
+# Git: User Identity Only
+
+- **Never** create commits with Cursor / cursoragent as author or committer.
+- **Never** add "Co-authored-by: Cursor" or similar to commit messages when pushing to the user's GitHub.
+- All commits and pushes to the user's repositories must be under **the user's identity only** (their `user.name` and `user.email`).
+- When suggesting git commands (commit, push), use the user's git config; do not inject Cursor as co-author.
+- If the tool or environment would add Cursor as co-author, instruct the user to run the commit/push themselves from the terminal with their identity, or to remove the co-author line from the message.

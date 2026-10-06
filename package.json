@@ -3,14 +3,31 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "typecheck": "tsc --noEmit",
+    "test:setup": "playwright test --project=setup",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:api": "playwright test --project=api",
+    "test:regression": "playwright test",
+    "test:browserstack": "browserstack-node-sdk playwright test --config=playwright.config.ts",
+    "test:browserstack:galaxy": "node scripts/run-browserstack.js tests/public/browserstack-galaxy-s24.spec.ts --config=playwright.config.ts --project=galaxy-s24-android-14",
+    "test:percy": "percy exec -- playwright test --config=playwright.config.ts",
+    "test:browserstack:percy": "percy exec -- browserstack-node-sdk playwright test --config=playwright.config.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@clerk/backend": "^2.33.7",
     "@clerk/testing": "^1.13.33",
+    "@percy/cli": "^1.29.0",
+    "@percy/playwright": "^1.0.10",
     "@playwright/test": "^1.58.0",
-    "@types/node": "^25.1.0"
+    "@types/node": "^25.1.0",
+    "browserstack-node-sdk": "^1.49.11",
+    "dotenv": "^16.4.5",
+    "typescript": "^7.0.2"
   }
 }
